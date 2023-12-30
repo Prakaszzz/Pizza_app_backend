@@ -5,6 +5,7 @@ com/example/demo/service/OrderService.class
 com/example/demo/entity/Variety.class
 com/example/demo/repository/VarietyRepository.class
 com/example/demo/service/MenuService.class
+com/example/demo/entity/UserOrder.class
 com/example/demo/entity/User.class
 com/example/demo/PizzaPlazaApplication.class
 com/example/demo/controller/VarietyController.class
@@ -19,3 +20,4 @@ com/example/demo/entity/CartResponseModel.class
 com/example/demo/service/UserService.class
 com/example/demo/repository/AddressRepository.class
 com/example/demo/entity/CartRequestModel.class
+com/example/demo/repository/UserOrderRepository.class
