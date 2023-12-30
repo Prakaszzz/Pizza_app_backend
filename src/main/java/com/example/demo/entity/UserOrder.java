@@ -5,37 +5,44 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "address")
+@Table(name = "user_order")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address {
+public class UserOrder {
+
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private String id;
 
-    private String houseNo;
+    private ZonedDateTime orderedTime;
 
-    private String street;
+    private String paymentMethod;
 
-    private String area;
+    private  Integer totalPrice;
 
-    private String landmark;
-
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private User user;
 
-    @OneToMany(mappedBy = "address", cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "address_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Address address;
+
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @ToString.Exclude
     @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private List<UserOrder> UserOrders;
+    private List<UserCart> carts;
+
 
 }

@@ -1,15 +1,16 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.*;
-import com.example.demo.repository.MenuRepository;
-import com.example.demo.repository.UserCartRepository;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.repository.VarietyRepository;
+import com.example.demo.repository.*;
+import net.minidev.json.JSONArray;
+import org.aspectj.weaver.ast.Or;
+import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,12 @@ public class OrderService {
     MenuRepository menuRepository;
     @Autowired
     VarietyRepository varietyRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
+
+    @Autowired
+    UserOrderRepository userOrderRepository;
 
 
     public ResponseEntity<?> getCount(String userId, String varietyId) {
@@ -116,5 +123,50 @@ public class OrderService {
     else{
         return new ResponseEntity<>("User not found",HttpStatus.BAD_REQUEST);
     }
+    }
+
+    public ResponseEntity<?> getPreviousOrders(String userId) {
+        if (userId!=null){
+            Optional<User> user=userRepository.findById(userId);
+            if (user.isPresent()){
+               List<UserOrder> orders=userOrderRepository.findAll();
+               return  new ResponseEntity<>(orders,HttpStatus.OK);
+            }
+        }
+        return  null;
+    }
+
+    public ResponseEntity<?> orderProducts(UserOrder order) {
+        System.out.print(order);
+
+        if(order.getAddress()!=null && order.getAddress().getId()!=null && order.getUser()!=null && order.getUser().getId()!=null){
+            Optional<User> user=userRepository.findById(order.getUser().getId());
+            if (user.isPresent()){
+                Optional<Address> address =addressRepository.findById(order.getAddress().getId());
+                if (address.isPresent()){
+                    UserOrder userOrder=new UserOrder();
+                    userOrder.setUser(user.get());
+                    userOrder.setAddress(address.get());
+                    List<UserCart> carts=userCartRepository.findByUserAndIsOrdered(user.get(),false);
+                    userOrder.setCarts(carts);
+                    Integer price=0;
+                    for (UserCart cart:carts){
+                        price+=cart.getVariety().getPrice();
+                        cart.setIsOrdered(true);
+                        userCartRepository.save(cart);
+                    }
+                    userOrder.setOrderedTime(ZonedDateTime.now());
+                    userOrder.setPaymentMethod(order.getPaymentMethod());
+                    userOrder.setTotalPrice(price);
+                    UserOrder order1=userOrderRepository.save(userOrder);
+                  return  new ResponseEntity<>(order1,HttpStatus.OK);
+
+                }
+            }
+        }
+        else {
+            return  new ResponseEntity<>("Provide all the required fields",HttpStatus.BAD_REQUEST);
+        }
+        return  null;
     }
 }

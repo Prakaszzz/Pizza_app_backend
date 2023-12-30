@@ -35,5 +35,11 @@ public class User {
     @EqualsAndHashCode.Exclude
     private List<Address> addresses;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    private List<UserOrder> userOrders;
+
 
 }

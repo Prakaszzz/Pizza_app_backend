@@ -31,4 +31,11 @@ public class UserCart {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private User user;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "order_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private UserOrder order;
+
 }
